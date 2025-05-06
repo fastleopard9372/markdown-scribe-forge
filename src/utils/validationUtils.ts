@@ -106,15 +106,29 @@ export const validateSlide = (
     errors: []
   };
   
-  const activeRules = rules.filter(rule => rule.active);
+  // Ensure rules is an array and each rule has a validator function
+  const activeRules = Array.isArray(rules) 
+    ? rules.filter(rule => rule && rule.active && typeof rule.validator === 'function') 
+    : [];
   
   for (const rule of activeRules) {
-    if (!rule.validator(slideContent)) {
+    try {
+      if (!rule.validator(slideContent)) {
+        result.valid = false;
+        result.errors.push({
+          slideIndex,
+          rule,
+          message: rule.description
+        });
+      }
+    } catch (error) {
+      console.error(`Error validating with rule ${rule.id}:`, error);
+      // Add a generic error for the failed validation
       result.valid = false;
       result.errors.push({
         slideIndex,
         rule,
-        message: rule.description
+        message: `Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`
       });
     }
   }
