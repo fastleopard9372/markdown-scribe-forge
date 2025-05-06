@@ -20,10 +20,13 @@ const Preview = ({ markdown, currentSlideIndex, onSlideChange }: PreviewProps) =
   }, [markdown]);
 
   useEffect(() => {
-    if (slides.length > 0) {
+    if (slides.length > 0 && currentSlideIndex >= 0 && currentSlideIndex < slides.length) {
       const currentSlide = slides[currentSlideIndex];
       const html = markdownToHtml(currentSlide);
       setHtmlContent(html);
+    } else {
+      // Handle case when there are no slides or index is out of bounds
+      setHtmlContent('<div class="text-gray-400 italic">No content to display</div>');
     }
   }, [slides, currentSlideIndex]);
 
@@ -41,13 +44,13 @@ const Preview = ({ markdown, currentSlideIndex, onSlideChange }: PreviewProps) =
         <h3 className="font-semibold">Preview</h3>
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-500">
-            Slide {currentSlideIndex + 1} of {slides.length}
+            Slide {currentSlideIndex + 1} of {slides.length || 0}
           </span>
           <Button 
             variant="outline" 
             size="icon"
             onClick={() => navigateSlide("prev")}
-            disabled={currentSlideIndex === 0}
+            disabled={currentSlideIndex === 0 || slides.length === 0}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -55,7 +58,7 @@ const Preview = ({ markdown, currentSlideIndex, onSlideChange }: PreviewProps) =
             variant="outline" 
             size="icon"
             onClick={() => navigateSlide("next")}
-            disabled={currentSlideIndex === slides.length - 1}
+            disabled={currentSlideIndex === slides.length - 1 || slides.length === 0}
           >
             <ArrowRight className="h-4 w-4" />
           </Button>

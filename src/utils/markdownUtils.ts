@@ -56,7 +56,12 @@ export const parseSlideComponents = (slideContent: string) => {
 };
 
 // Simple markdown to HTML conversion (basic implementation)
-export const markdownToHtml = (markdown: string): string => {
+export const markdownToHtml = (markdown: string | undefined): string => {
+  // Handle undefined or null input
+  if (!markdown) {
+    return '';
+  }
+  
   let html = markdown;
   
   // Convert headings
